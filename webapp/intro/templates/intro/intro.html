@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+{% load static %}
+    <head>
+        <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+        <script src="{% static 'js/page_move.js' %}"></script>
+
+    </head>
+    <body>
+        <nav class="navbar navbar-light bg-light">
+            <form class="container-fluid justify-content-start">
+              <button class="btn btn-outline-success me-2" type="button" onclick="goHome()">Home</button>
+              <button class="btn btn-sm btn-outline-secondary" type="button" onclick="goBlog()">Blog</button>
+              <button class="btn btn-sm btn-outline-secondary" type="button" onclick="goAboutme()">About me</button>
+            </form>
+            <form action="/intro/" method="get">
+              <input type="text" name="q">
+              <input type="submit" value="검색">
+            </form>
+        </nav>
+        <div>
+            {% for dt in content %}
+        <div class='row'>
+            <div class='col-2'>이름:{{ dt.names }}</div>
+            <div class='col-2'>취미:{{ dt.hobby }}</div>
+            <div class="col-8">경로:{{ dt.pic }}</div>
+        </div>
+        {% endfor %}
+        </div>
+    </body>
+</html>

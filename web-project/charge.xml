@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<response>
+  <header>
+    <resultCode>00</resultCode>
+    <resultMsg>NORMAL SERVICE.</resultMsg>
+  </header>
+  <body>
+    <items>
+      <item>
+        <addr>서울특별시 중구 남대문로 92 1층 주차장</addr>
+        <chargeTp>2</chargeTp>
+        <cpId>811</cpId>
+        <cpNm>급속01</cpNm>
+        <cpStat>1</cpStat>
+        <cpTp>10</cpTp>
+        <csId>14</csId>
+        <csNm>서울직할</csNm>
+        <lat>37.565199</lat>
+        <longi>126.983339</longi>
+        <statUpdateDatetime>2021-06-29 23:05:00</statUpdateDatetime>
+      </item>
+      <item>
+        <addr>경상남도 남해군 남해읍 심천리 955-1 정문 우측</addr>
+        <chargeTp>2</chargeTp>
+        <cpId>464</cpId>
+        <cpNm>급속01</cpNm>
+        <cpStat>3</cpStat>
+        <cpTp>10</cpTp>
+        <csId>75</csId>
+        <csNm>남해지사</csNm>
+        <lat>34.851325596758144</lat>
+        <longi>127.8942036494668</longi>
+        <statUpdateDatetime>2021-06-29 23:02:07</statUpdateDatetime>
+      </item>
+      <item>
+        <addr>서울특별시 한강대로 23길 55 4.5F층 달주차장</addr>
+        <chargeTp>2</chargeTp>
+        <cpId>725</cpId>
+        <cpNm>급속06</cpNm>
+        <cpStat>1</cpStat>
+        <cpTp>10</cpTp>
+        <csId>120</csId>
+        <csNm>용산역 아이파크몰</csNm>
+        <lat>37.530561</lat>
+        <longi>126.965169</longi>
+        <statUpdateDatetime>2021-06-29 23:01:28</statUpdateDatetime>
+      </item>
+      <item>
+        <addr>경상남도 창원시 의창구 도계동 908 쎄씨헤어 앞</addr>
+        <chargeTp>1</chargeTp>
+        <cpId>229</cpId>
+        <cpNm>완속03</cpNm>
+        <cpStat>1</cpStat>
+        <cpTp>3</cpTp>
+        <csId>81</csId>
+        <csNm>의창구청</csNm>
+        <lat>35.254646</lat>
+        <longi>128.639178</longi>
+        <statUpdateDatetime>2021-06-29 23:02:59</statUpdateDatetime>
+      </item>
+      <item>
+        <addr>부산광역시 해운대구 우동 1413-4 지하주차장</addr>
+        <chargeTp>2</chargeTp>
+        <cpId>6891</cpId>
+        <cpNm>급속03</cpNm>
+        <cpStat>1</cpStat>
+        <cpTp>10</cpTp>
+        <csId>2605</csId>
+        <csNm>벡스코 제2전시장 지하주차장</csNm>
+        <lat>35.16556026063979</lat>
+        <longi>129.13480091423258</longi>
+        <statUpdateDatetime>2021-06-29 23:05:47</statUpdateDatetime>
+      </item>
+    </items>
+    <numOfRows>10</numOfRows>
+    <pageNo>1</pageNo>
+    <totalCount>2126</totalCount>
+  </body>
+</response>
