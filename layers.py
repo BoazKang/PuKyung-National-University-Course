@@ -157,37 +157,74 @@ class ThreeLayerNet:
                 print(f'epoch:{epoch}, acc:{self.accuracy(x,t)}, loss:{self.loss(x,t)}')
                 
                 
-class MultiLayerNet:
+class MultiLayer:
     def __init__(self,input_size,hidden_size,output_size):
-        hidden_size.append(output_size)
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.output_size = output_size
+        
+        self.hidden_size.insert(0,self.input_size)
+        self.hidden_size.append(self.output_size)
         self.W = {}
-        self.W['Input'] = np.random.randn(input_size,hidden_size[0])
-        self.W['Input_b'] = np.random.randn(hidden_size[0])
         for i in range(len(hidden_size)-1):
-            w = 'W'+str(i)
-            b = 'b'+str(i)
-            self.W[w] = np.random.randn(hidden_size[i],hidden_size[i+1])
-            self.W[b] = np.random.randn(hidden_size[i+1])
+            w_key = 'W'+str(i+1)
+            b_key = 'b'+str(i+1)
+            self.W[w_key] = np.random.randn(hidden_size[i],hidden_size[i+1])
+            self.W[b_key] = np.random.randn(hidden_size[i+1])
             
-    def predict(self,x):
-        j=0
-        for i in range(len(self.W)):
-            if j % 2 == 0 and i < (len(self.W)-1):
-                x = relu(np.dot(x,self.W[list(self.W.keys())[i]]) + self.W[list(self.W.keys())[i+1]])
-            elif j % 2 == 0 and i >= (len(self.W)-1):
-                x = (np.dot(x,self.W[list(self.W.keys())[i]]) + self.W[list(self.W.keys())[i+1]])
-            j+=1
-        return softmax(x)
+        self.layers = OrderedDict()
+        
+        for i in range(int(len(self.W)/2)-1):
+            aff_key = 'Affine_'+str(i+1)
+            relu_key = 'Relu_'+str(i+1)
+            w_key = 'W'+str(i+1)
+            b_key = 'b'+str(i+1)
+            self.layers[aff_key] = Affine(self.W[w_key],self.W[b_key])
+            self.layers[relu_key] = Relu()
+        
+        last_num = str(int(len(self.W)/2))
+        self.layers['Affine_'+last_num] = Affine(self.W['W'+last_num],self.W['b'+last_num])
+        self.Lastlayer = SoftmaxWithLoss()
+        self.loss_val = []
+        self.acc_val = []
     
+    #def summary(self):
+        
+    
+    def predict(self,x):
+        for layer in self.layers.values():
+            x = layer.forward(x)
+        return x
+
     def loss(self,x,t):
         y = self.predict(x)
-        return cross_entropy_error(y,t)
-    
-    def numerical_gradient(self,x,t):
-        f = lambda W: self.loss(x,t)
+        loss = self.Lastlayer.forward(y,t)
+        return loss
+
+    def gradient(self,x,t):
+        self.loss(x,t)
+        dout = 1
+        dout = self.Lastlayer.backward(dout)
+        layers = list(self.layers.values())
+        layers.reverse()
+        for layer in layers:
+            dout = layer.backward(dout)
+        
         grads = {}
-        for key in self.W.keys():
-            grads[key] = numerical_gradient(f,self.W[key])
+        layer_number = int(len(self.layers.keys())/2)
+
+        
+        # for i in range(int(len(self.W)/2)):
+        #     w_key = 'W'+str(i+1)
+        #     b_key = 'b'+str(i+1)
+        #     aff_key = 'Affine_'+str(i+1)
+        #     grads[w_key] = self.layers[aff_key].dW
+        #     grads[b_key] = self.layers[aff_key].db
+            
+        for i in range(1,layer_number+2):
+            grads['W'+str(i)] = self.layers['Affine'+str(i)].dW
+            grads['b'+str(i)] = self.layers['Affine'+str(i)].db
+            
         return grads
     
     def accuracy(self,x,t):
@@ -195,13 +232,40 @@ class MultiLayerNet:
         t = np.argmax(t, axis=1)
         acc = np.sum(y==t)/y.size
         return acc
+            
     
-    def fit(self,x,t,epochs=1000,lr=1e-3,verbos=1):
+    def fit(self,epochs,batch_size,lr,x,t,x_val,t_val):
+        if divmod(x.shape[0],batch_size)[1] > 0:
+            batch = divmod(x.shape[0],batch_size)[0] + 1
+        else:
+            batch = divmod(x.shape[0],batch_size)[0]
         for epoch in range(epochs):
-            for key in self.W.keys():
-                self.W[key] -= lr*self.numerical_gradient(x,t)[key]
-            if verbos == 1:
-                print(epoch,":epoch============== accuracy: ",self.accuracy(x,t),"==========loss :", self.loss(x,t))
+            if epoch == 0:
+                start = 0
+            end = start + batch_size
+            if epoch == epochs-1 and divmod(x.shape[0],batch_size)[1] != 0:
+                end = start+divmod(x.shape[0],batch_size)[1]
+            x_tmp = x[start:end,:]
+            t_tmp = t[start:end,:]
+            start = end
+            for i in range(batch):
+                grads = self.gradient(x_tmp,t_tmp)
+            for key in grads.keys():
+                self.W[key] -=  lr*grads[key]
+            if epoch % 20 == 0:
+                print(f"epoch {epoch}:val_loss==========={np.round(self.loss(x_val,t_val),4)}, val_acc:========{np.round(self.accuracy(x_val,t_val),4)*100}%")
+                self.loss_val.append(self.loss(x_val,t_val))
+                self.acc_val.append(self.accuracy(x_val,t_val))
+                
+    def fit_gd(self,epochs,lr,x,t,x_val,t_val):
+        for epoch in range(epochs):
+            grads = self.gradient(x,t)
+            for key in grads.keys():
+                self.W[key] -= lr*grads[key]
+            if epoch % 20 == 0:
+                print(f"epoch {epoch}:val_loss==========={np.round(self.loss(x_val,t_val),4)}, val_acc:========{np.round(self.accuracy(x_val,t_val),4)*100}%")
+                self.loss_val.append(self.loss(x_val,t_val))
+                self.acc_val.append(self.accuracy(x_val,t_val))
                 
                 
 class Relu:
