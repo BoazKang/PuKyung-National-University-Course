@@ -1,0 +1,273 @@
+DHCP 서버 사용함
+호스트 bridge 를 사용하는것
+
+내 가상 환경에서 
+
+
+
+
+
+-
+
+
+
+------------------------------------------------------------------------------------------------------------------
+-
+리눅스
+
+새로운 계정 생성
+adduser (사용자 계정)
+
+비밀번호설정
+passwd (사용자 계정명)
+
+
+나는 charminglee로 생성
+비밀번호는
+050505
+
+
+
+
+
+
+cd home한 후에 ls를 해보면 유저명으로 폴더가 만들어져 있다.
+
+어떤 유저가 사용할 수 있는 명령어들은 cd //bin에 모여있다.
+
+권한 알파벳
+
+l : link
+r,w,x
+read write execute
+
+
+etc폴더에는 데몬이 들어감
+데몬? 서비스를 제공하기 위한 파일들을 말함
+
+
+----------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+레포지토리에서 패키지 인스톨
+yum install wget
+
+wget?
+웹겟
+웹에서 받아온다.
+
+
+권한 변경
+chmod 777 (바꿀파일명)
+7      7    7
+사용자 그룹 other 순
+
+
+
+vi에서 커맨드 모드에서
+/(찾을단어)   => 단어찾기
+set nu   => 라인넘버표시
+이후 :(숫자)  =>원하는 라인으로 커서이동
+
+유저 바꾸기
+su  
+
+substitude user
+
+
+ssh 접속
+ssh (유저명)@192.168.56.101
+
+이후 첫접속일 경우 fingerprint 요구 
+yes 타이핑후 
+암호입력  ===> 접속완료
+
+
+wget으로 웹포트에 열린 곳으로 다운로드
+
+셸에서
+wget https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh
+입력
+
+파일을 실행하려면
+파일구조를 루트폴더부터 입력해야
+실행이된다
+
+~ : 자기자신 .루트부터 현재디렉토리까지를 간략히 줄인것
+
+/bin/ls
+치면 ls명령어가 나온다
+path를 걸면 명령의 앞의 path를 생략할 수 있다.
+
+
+
+환경변수설정
+Path
+
+.bashrc 파일을 vi로 수정
+
+export PATH=$PATH:/home/charminglee/anaconda3/bin
+이후
+source .bashrc 명령어 입력
+.bashrc 적용
+
+주피터 아이피 및 포트변경
+
+jupyter lab --ip=192.168.56.101 --port=8888
+
+패스워드 설정시 해제 옵션
+jupyter lab --ip=192.168.56.101 --port=8888 --NotebookApp.token='' --NotebookApp.password=''
+
+방화벽해제
+sudo systemctl stop firewalld
+
+방화벽 다운(끄기)
+sudo systemctl disable firewalld
+
+-----------------------------------------------------------------------------------------------------------------
+
+
+항상 백그라운드 실행
+
+nohup (사용할 명령어)
+
+주피터 노트북 백그라운드 실행
+
+nohup jupyter lab --ip=192.168.56.101 --port=8888 --NotebookApp.token='' --NotebookApp.password=''
+
+유저 디렉토리(/home/charminglee)에서 시작
+
+work_space , sh 디렉토리생성
+mkdir work_space
+mkdir sh
+
+sh디렉토리로 이동후 note파일 생성
+cd sh
+vi note
+
+
+note------------------------------------------------------------
+
+!/bin/sh
+cd /home/charminglee/work_space
+
+nohup jupyter lab --ip=192.168.56.101 --port=8888 --NotebookApp.token='' --NotebookApp.password='' &
+--------------------------------------------------------------------
+
+:wq로 저장
+
+노트를 실행가능한 파일로 모드 변환
+chmode 774 note
+
+사용자 루트 디렉토리로 이동
+cd
+
+.bashrc 파일 PATH추가
+vi .bashrc
+
+.bashrc-----------------------------------------------------------------
+
+export PATH=$PATH:/home/charminglee/anaconda3/bin:/home/charminglee/sh
+
+--------------------------------------------------------------------------
+
+.bashrc 재실행
+source .bashrc
+
+완성!
+
+note
+위 명령어 입력하면 
+nohup: appending output to 'nohup.out'
+이라는 문구가 뜸
+
+브라우저를 열고 192.168.56.101:8888 을 입력하면
+노트북이 열림
+리눅스상의 아나콘다 환경에서 노트북을 실행하고 작업을 저장할 수 있는 환경을 구축한것!
+
+
+##
+note라는 텍스트 파일에 nohup으로 주피터 노트북이 nohup옵션으로 실행될 수 있는 명령어를 담아두고
+note를 실행함으로써 백그라운드에 노트북세션을 유지하는 과정
+
+.bashrc는 셸에서 실행파일을 찾을때 참조하는 파일
+PATH는 실행파일을 찾을 경로들을 적어놓은것
+
+
+-----------------------------------------------------------------------------------------------------------------------
+
+
+mysql 설치과정
+----------------------------------------------------
+루트계정으로 들어가는 과정
+su -
+루트비밀번호 입력
+
+개발키트를 많이 가져옴 C언어 개발을 용이하게 해줌
+yum install epel-install
+
+mysql설치 명령어
+
+yum -y install http://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
+
+yum -y install mysql-community-server
+
+
+
+2022버전 키가 바뀌어서 반영해주는 명령
+rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2022
+
+서버 다운 다시실행
+yum -y install mysql-community-server
+
+
+시스템에서 mysql 시작
+systemctl start mysqld
+
+패스워드를 사용한 mysql진입
+mysql -u root -p
+
+
+초기 유저 패스워드 재설정(안하면 sql문을 실행할 수 없음)
+ALTER USER 'root'@'localhost' identified by 'Bigdata123!!'
+
+데이터베이스 비밀번호
+Bigdata123!!
+
+-------------------------------------------------------------------------------------------------------------------
+
+외부에서는 root계정으로 데이터베이스에 접근이 불가능하다 그래서 새로운 유저 하나를 생성해야한다.
+
+CREATE USER 유저이름 IDENTIFIED BY 'Bigdata123!!'
+
+유저에게 권한주기
+
+grant all privileges on *.* to 'bigdata'@'*' identified by 'Bigdata123!!';
+
+
+
+사킬라 db 다운로드
+
+wget https://downloads.mysql.com/docs/sakila-db.tar.gz
+
+압축해제
+tar -zxcf sakila-db.tar.gz
+
+mysql접속후 sql문 실행
+
+mysql> source sakila-schema.sql;
+mysql> source sakila-data.sql;
+
+이후 확인하면 데이터가 들어와있다.
+
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------
+
+
+
